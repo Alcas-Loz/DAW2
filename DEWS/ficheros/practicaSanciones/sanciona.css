@@ -1,0 +1,16 @@
+#menu{
+    position: relative;
+    justify-items: center;
+    top: 200px;
+    margin-left: 40%;
+}
+#menu a{
+    text-decoration: none;
+}
+#formU{
+    width: fit-content;
+    position: relative;
+    justify-items: center;
+    top: 200px;
+    margin-left: 30%;
+}
