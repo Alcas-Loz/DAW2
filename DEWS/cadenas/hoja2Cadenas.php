@@ -22,7 +22,6 @@
     correcto<br>"):print("e-mail incorrecto<br>");
     //var_dump(strstr($email,"@"));
     if((strstr($email,"@"))&&(strstr($email,".")))
-    $email = explode("@",$email);
     echo "Usuario: $email[0]<br>";
     echo "Dominio: $email[1]<br>";
     // comprobar que la última ocurrencia del punto es posterior a @

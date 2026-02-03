@@ -1,0 +1,15 @@
+form{
+    border: 1px solid blue;
+    padding: 20px;
+    width: 450px;
+    border-style: dashed;
+}
+.error{
+    color: red;
+}
+#not{
+    border: 1px solid blue;
+    padding: 20px;
+    width: 450px;
+    border-style: dashed;
+}

@@ -1,0 +1,12 @@
+Leonardo DiCaprio,611222333,image1.jpg,Actor,1974-11-11
+Serena Williams,622111222,image2.jpg-2343,Tenista,1981-09-26
+Ariana Grande,633444555,image3.jpg-7876,Cantante,1993-06-26
+Cristiano Ronaldo,644666777,image4.jpg-6765,Futbolista,1985-02-05
+Emma Watson,699111222,image5.jpg-7899,Actriz,1990-04-15
+Elon Musk,655888666,image6.jpg-1234,Empresario,1971-06-28
+Beyoncé,649123456,image7.jpg-6789,Cantante,1981-09-04
+Lebron James,675111222,image8.jpg-4353,Baloncestista,1984-12-30
+Tom Hanks,641111888,image9.jpg-9889,Actor,1956-07-09
+alberto,123456789,im1.jpeg,Cantante,2025-12-01
+carmen,29,im2.jpeg,Director de cine,2025-12-02
+carmen,123456789,im1.jpeg,Tenista,2025-12-11

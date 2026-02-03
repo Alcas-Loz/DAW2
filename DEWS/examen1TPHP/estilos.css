@@ -1,3 +1,10 @@
+#tabla{
+    border: 1px solid black;
+}
+#tabla td{
+    padding: 5px;
+    text-align: center;
+}
 #menu{
     position: relative;
     justify-items: center;
