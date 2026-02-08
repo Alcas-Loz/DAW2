@@ -48,8 +48,8 @@
                 $cargo = isset($_POST['cargo']) ? 1 : 0;
                 $nombrecargo=$_POST["nombrecargo"];
                 $situacion=$_POST["situacion"];
-                $fechanacimiento=$_POST["fechaalta"];
-                if(empty($fechanacimiento)){
+                $fechaAlta=$_POST["fechaalta"];
+                if(empty($fechaAlta)){
                     $errores['fechaalta'] = "Introduce una fecha de alta";
                 }
                 $especialidad=$_POST["especialidad"];
@@ -66,7 +66,7 @@
                         $con = new PDO('mysql:host=localhost;dbname=cursoscp;charset=utf8', 'admin', '1234');
                         $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                         $query=$con->prepare("INSERT into solicitantes values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                        $query->execute([$dni,$apellidos,$nombre,$telefono,$email,$codigocentro,$coordeinadortic,$grupotic,$nombregru,$pbilin,$cargo,$nombrecargo,$situacion,$fechanacimiento,$especialidad,$puntos,$contrasena]);
+                        $query->execute([$dni,$apellidos,$nombre,$telefono,$email,$codigocentro,$coordeinadortic,$grupotic,$nombregru,$pbilin,$cargo,$nombrecargo,$situacion,$fechaAlta,$especialidad,$puntos,$contrasena]);
                         enviarEmail($email, "Registro en CursosCP", "¡Bienvenido a CursosCP! Tu registro ha sido exitoso.", null);
                         header("Location: login.php?token=$token");
                         exit();
