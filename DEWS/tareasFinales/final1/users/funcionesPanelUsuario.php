@@ -1,22 +1,35 @@
 <?php
-
 function inscribirse($con) {
     $nombreCurso = $_POST['inscribirse'];
     $query = $con->prepare("SELECT codigo, abierto FROM cursos WHERE nombre = ?");
     $query->execute([$nombreCurso]);
     $curso = $query->fetch(PDO::FETCH_ASSOC);
-    if ($curso && $curso['abierto'] == 1) {
-        $codigoCurso = $curso['codigo'];
-        $insertSql = $con->prepare("INSERT INTO solicitudes (dni, codigocurso, fechasolicitud, admitido) VALUES (?, ?, CURDATE(), 0)");
-        $insertSql->execute([$_SESSION['dni'], $codigoCurso]);
-        $updateSql = $con->prepare("UPDATE cursos SET numeroplazas = numeroplazas - 1 WHERE codigo = ?");
-        $updateSql->execute([$codigoCurso]);
-        $query->closeCursor();
-        header("Location: panelUsuario.php?token=" . $_SESSION['token']);
-        exit();
-    }else {
-        echo "<div class='alert alert-danger text-center' style='margin-top:20px;'>No se pudo inscribir. El curso no está abierto o no existe.</div>";
+    if ($curso) {
+        if ($curso['abierto'] == 1) {
+            $codigoCurso = $curso['codigo'];
+            $dni = $_SESSION['dni'];
+            $check = $con->prepare("SELECT * FROM solicitudes WHERE dni = ? AND codigocurso = ?");
+            $check->execute([$dni, $codigoCurso]);
+            if ($check->rowCount() == 0) {
+                $insertSql = $con->prepare("INSERT INTO solicitudes (dni, codigocurso, fechasolicitud, admitido) VALUES (?, ?, CURDATE(), 0)");
+                $insertSql->execute([$dni, $codigoCurso]);
+                $_SESSION['mensaje'] = "Solicitud registrada. Tu admisión dependerá de los puntos al finalizar el plazo.";
+                $_SESSION['tipo_mensaje'] = "success"; 
+            } else {
+                $_SESSION['mensaje'] = "Error: Ya habías solicitado plaza en este curso.";
+                $_SESSION['tipo_mensaje'] = "warning";
+            }
+        } else {
+            $_SESSION['mensaje'] = "Aviso: El plazo de este curso está cerrado.";
+            $_SESSION['tipo_mensaje'] = "danger"; 
+        }
+    } else {
+        $_SESSION['mensaje'] = "Error: El curso no existe.";
+        $_SESSION['tipo_mensaje'] = "danger";
     }
+    $query->closeCursor();
+    header("Location: panelUsuario.php?token=" . $_SESSION['token']);
+    exit();
 }
 function buscarCursos($con, $fechaBusqueda) {
     if (empty($fechaBusqueda)) {

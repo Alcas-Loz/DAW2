@@ -12,7 +12,7 @@ if(isset($_POST["datos"])){
             $query = $con->prepare("SELECT usuario,contraseña FROM administradores WHERE usuario=? AND contraseña=?");
             $query->execute([$username, $password]);
             if ($query->rowCount() > 0) {
-                header("Location: panelAdmin.php?token=$token");
+                header("Location: admins/panelAdmin.php?token=$token");
                 exit();
             }
             $query = $con->prepare("SELECT dni, correo, contrasena FROM solicitantes WHERE correo=? AND contrasena=?");
@@ -20,7 +20,7 @@ if(isset($_POST["datos"])){
             if ($query->rowCount() > 0) {
                 $fila = $query->fetch(PDO::FETCH_ASSOC);
                 $_SESSION['dni'] = $fila['dni'];
-                header("Location: panelUsuario.php?token=$token");
+                header("Location: users/panelUsuario.php?token=$token");
                 exit();
             }
             echo "<div class='alert alert-danger'>Usuario o contraseña incorrectos.</div>";

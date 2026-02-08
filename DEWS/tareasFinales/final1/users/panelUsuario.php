@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['token']) || $_SESSION['token'] !== $_GET['token']) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 require_once 'funcionesPanelUsuario.php';
@@ -20,13 +20,22 @@ try {
 <html lang="en">
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="../estilos.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Usuario</title>
 </head>
 <body>
     <h1 class='text-center'>Panel de Usuario</h1><br>
+    <?php if (isset($_SESSION['mensaje'])): ?>
+    <div class="alert alert-<?php echo $_SESSION['tipo_mensaje']; ?> text-center" style="margin: 20px;">
+        <?php 
+            echo $_SESSION['mensaje']; 
+            unset($_SESSION['mensaje']);
+            unset($_SESSION['tipo_mensaje']);
+        ?>
+    </div>
+    <?php endif; ?>
     <div class='center' style="text-align: center; margin-bottom: 20px;">
         <h1>Buscar Cursos</h1>
         <form action="panelUsuario.php?token=<?php echo $_GET['token']; ?>" method="post" style='display:inline;'>
@@ -35,9 +44,9 @@ try {
             <br><br>
             <button type="submit" name="buscar" class="btn btn-primary">Buscar Cursos</button>
         </form>
-        <form action="login.php" method="post" style='display:inline; margin-left: 10px;'>
+        <form action="../login.php" method="post" style='display:inline; margin-left: 10px;'>
             <button type="submit" name="cerrarSesion" class="btn btn-secondary">Cerrar Sesión</button><br><br>
-            <a href="listaCursos.php">Volver al Menu Principal</a>
+            <a href="../listaCursos.php">Volver al Menu Principal</a>
         </form>
     </div>
     <div class="container">

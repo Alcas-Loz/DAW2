@@ -2,7 +2,7 @@
 require_once 'funcionesPanelAdmin.php';
 session_start();
 if (!isset($_SESSION['token']) || $_SESSION['token'] !== $_GET['token']) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 $con = new PDO('mysql:host=localhost;dbname=cursoscp;charset=utf8', 'admin', '1234');
@@ -12,7 +12,7 @@ eliminarCurso($con);
 crearCurso($con);
 if (isset($_POST['cerrarSesion'])) {
     session_destroy();
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 ?>
@@ -20,14 +20,21 @@ if (isset($_POST['cerrarSesion'])) {
 <html lang="en">
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="../estilos.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administrador</title>
 </head>
 <body>
     <h1 class="text-center">Panel de Administrador</h1>
-    <?php
+    <?php 
+    if (isset($_SESSION['mensaje'])){
+        echo '<div class="alert alert-'.$_SESSION['tipo_mensaje'].' text-center" style="margin: 20px;">';
+            echo $_SESSION['mensaje']; 
+            unset($_SESSION['mensaje']); 
+            unset($_SESSION['tipo_mensaje']);
+        echo '</div>';
+    }
     try {
         $strsql = "SELECT * FROM cursos";
         echo "<table class='table table-bordered' border='1px solid black'>";
@@ -65,17 +72,17 @@ if (isset($_POST['cerrarSesion'])) {
         echo "</table>";
         echo "<div class='center'>";
             echo "<h2>Crear Nuevo Curso</h2>";
-            echo "<form action='panelAdmin.php?token=" . $_SESSION['token'] . "' method='post'>";
-            echo "<label for='codigo'>Codigo del Curso:</label><br>";
-            echo "<input type='text' name='codigo' id='codigo'><br><br>";
-            echo "<label for='nombrecurso'>Nombre del Curso:</label><br>";
-            echo "<input type='text' name='nombrecurso' id='nombrecurso'><br><br>";
-            echo "<label for='abierto'>Abierto:</label><br>";
-            echo "<input type='checkbox' name='abierto' id='abierto'><br><br>";
-            echo "<label for='numeroplazas'>Numero de Plazas:</label><br>";
-            echo "<input type='text' name='numeroplazas' id='numeroplazas'><br><br>";
-            echo "<label for='plazoinscripcion'>Plazo de Inscripción:</label><br>";
-            echo "<input type='text' name='plazoinscripcion' id='plazoinscripcion'><br><br>";
+            echo "<form id='loginForm' action='panelAdmin.php?token=" . $_SESSION['token'] . "' method='post'>";
+            echo "<label for='codigo'>Codigo del Curso:</label>";
+            echo "<input type='text' name='codigo' id='codigo'>";
+            echo "<label for='nombrecurso'>Nombre del Curso:</label>";
+            echo "<input type='text' name='nombrecurso' id='nombrecurso'>";
+            echo "<label for='abierto'>Abierto:</label>";
+            echo "<input type='checkbox' name='abierto' id='abierto'>";
+            echo "<label for='numeroplazas'>Numero de Plazas:</label>";
+            echo "<input type='text' name='numeroplazas' id='numeroplazas'>";
+            echo "<label for='plazoinscripcion'>Plazo de Inscripción:</label>";
+            echo "<input type='date' name='plazoinscripcion' id='plazoinscripcion'>";
             echo "<button type='submit' name='crear' class='btn btn-primary'>Crear Curso</button>";
             echo "</form>";
             echo "<form action='panelAdmin.php?token=" . $_SESSION['token'] . "' method='post'><button type='submit' name='cerrarSesion' class='btn btn-secondary'>Cerrar Sesión</button></form>";

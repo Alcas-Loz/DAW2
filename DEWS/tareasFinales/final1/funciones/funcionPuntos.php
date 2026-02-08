@@ -1,8 +1,8 @@
 <?php
-function ordenarSolicitudesPorPuntos($codigoCurso, $numPlazas)
+function funcionPuntos($codigoCurso, $numPlazas)
 {
     try {
-        $con = new PDO('mysql:host=localhost;dbname=cursoscp;charset=utf8', 'victor', '1234');
+        $con = new PDO('mysql:host=localhost;dbname=cursoscp;charset=utf8', 'admin', '1234');
         $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $consulta = "SELECT s.dni, s.nombre, s.apellidos, s.puntos, 
                 (SELECT COUNT(*) 
@@ -20,7 +20,6 @@ function ordenarSolicitudesPorPuntos($codigoCurso, $numPlazas)
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        // En producción, mejor loguear el error y no mostrarlo
         error_log("Ha ocurrido un error en la base de datos");
         return [];
     }
