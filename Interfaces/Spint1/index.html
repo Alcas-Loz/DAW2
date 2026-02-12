@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Etapas Educativas - H8</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light">
+    <div class="container mt-5">
+      <h2 class="mb-4">📚 H8. Gestión de Etapas Educativas</h2>
+
+      <div class="card p-4 mb-4">
+        <h5 id="formTitle">Nueva Etapa</h5>
+        <form id="etapaForm">
+          <input type="hidden" id="etapaId" />
+          <div class="mb-3">
+            <label for="nombreEtapa" class="form-label"
+              >Nombre de la Etapa (Ej: ESO, Bachillerato)</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="nombreEtapa"
+              required
+              placeholder="Introduce el nombre"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnGuardar">
+            Guardar Etapa
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="btnCancelar"
+            style="display: none"
+          >
+            Cancelar Edición
+          </button>
+        </form>
+      </div>
+
+      <div class="card p-4">
+        <h5>Listado Actual</h5>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre de la Etapa</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaEtapasBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+      const API_URL = "http://localhost:3000/etapas";
+      document.addEventListener("DOMContentLoaded", cargarEtapas);
+      async function cargarEtapas() {
+        try {
+          const response = await fetch(API_URL);
+          const etapas = await response.json();
+          const tbody = document.getElementById("tablaEtapasBody");
+          tbody.innerHTML = "";
+          etapas.forEach((etapa) => {
+            const fila = `
+                    <tr>
+                        <td>${etapa.id}</td>
+                        <td>${etapa.nombre}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="prepararEdicion(${etapa.id}, '${etapa.nombre}')">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="borrarEtapa(${etapa.id})">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            tbody.innerHTML += fila;
+          });
+        } catch (error) {
+          console.error("Error cargando etapas:", error);
+          alert("No se pudo conectar con el servidor en el puerto 3000.");
+        }
+      }
+      document
+        .getElementById("etapaForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const id = document.getElementById("etapaId").value;
+          const nombre = document.getElementById("nombreEtapa").value;
+          const method = id ? "PUT" : "POST";
+          const url = id ? `${API_URL}/${id}` : API_URL;
+          try {
+            const response = await fetch(url, {
+              method: method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nombre: nombre }),
+            });
+            if (response.ok) {
+              alert(
+                id
+                  ? "Etapa actualizada correctamente (CA2)"
+                  : "Etapa creada correctamente",
+              );
+              resetForm();
+              cargarEtapas();
+            } else {
+              alert("Error al guardar. Verifica los datos.");
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      async function borrarEtapa(id) {
+        if (!confirm("¿Seguro que quieres borrar esta etapa?")) return;
+        try {
+          const response = await fetch(`${API_URL}/${id}`, {
+            method: "DELETE",
+          });
+          if (response.ok) {
+            alert("Etapa eliminada.");
+            cargarEtapas();
+          } else {
+            const errorMsg = await response.text();
+            alert(
+              `ERROR CA1: No se puede eliminar la Etapa.\n\nEs probable que existan Cursos vinculados a ella.\nEl sistema protege la integridad referencial.`,
+            );
+          }
+        } catch (error) {
+          alert("Error de conexión con el servidor.");
+        }
+      }
+      window.prepararEdicion = function (id, nombre) {
+        document.getElementById("etapaId").value = id;
+        document.getElementById("nombreEtapa").value = nombre;
+        document.getElementById("btnGuardar").textContent = "Actualizar Etapa";
+        document.getElementById("formTitle").textContent = "Editar Etapa (CA2)";
+        document.getElementById("btnCancelar").style.display = "inline-block";
+      };
+      function resetForm() {
+        document.getElementById("etapaForm").reset();
+        document.getElementById("etapaId").value = "";
+        document.getElementById("btnGuardar").textContent = "Guardar Etapa";
+        document.getElementById("formTitle").textContent = "Nueva Etapa";
+        document.getElementById("btnCancelar").style.display = "none";
+      }
+      document
+        .getElementById("btnCancelar")
+        .addEventListener("click", resetForm);
+    </script>
+  </body>
+</html>
