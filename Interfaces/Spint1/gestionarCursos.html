@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>H5 Gestión de Cursos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4 bg-light">
+<h2>🎓 H5. Gestión de Cursos</h2>
+<div class="card p-4 mb-4">
+    <h5>Nuevo Curso</h5>
+    <form id="cursoForm">
+        <div class="mb-3">
+            <label>Nombre del Curso (Ej: 2º DAW)</label>
+            <input type="text" id="nombreCurso" class="form-control" required>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label>Etapa</label>
+                <select id="selectEtapa" class="form-select" required><option>Cargando...</option></select>
+            </div>
+            <div class="col-md-4">
+                <label>Turno</label>
+                <select id="selectTurno" class="form-select" required><option>Cargando...</option></select>
+            </div>
+            <div class="col-md-4">
+                <label>Tutor (Profesor)</label>
+                <select id="selectTutor" class="form-select" required><option>Cargando...</option></select>
+            </div>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-success">Crear Curso</button>
+    </form>
+</div>
+<table class="table table-bordered bg-white">
+    <thead><tr><th>Curso</th><th>Tutor</th><th>Alumnos</th><th>Acciones</th></tr></thead>
+    <tbody id="tablaCursos"></tbody>
+</table>
+<script>
+    const API_BASE = 'http://100.52.46.68:3000';
+    async function cargarDesplegables() {
+        const et = await fetch(`${API_BASE}/etapas`).then(r => r.json());
+        document.getElementById('selectEtapa').innerHTML = et.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+        const tu = await fetch(`${API_BASE}/turnos`).then(r => r.json());
+        document.getElementById('selectTurno').innerHTML = tu.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
+        const pr = await fetch(`${API_BASE}/profesores`).then(r => r.json());
+        document.getElementById('selectTutor').innerHTML = pr.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+        cargarCursos();
+    }
+    async function cargarCursos() {
+        const cursos = await fetch(`${API_BASE}/cursos`).then(r => r.json());
+        const tbody = document.getElementById('tablaCursos');
+        tbody.innerHTML = '';
+        cursos.forEach(c => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${c.nombre}</td>
+                    <td>${c.tutor_nombre || 'Sin asignar'}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="verAlumnos(${c.id})">Ver Alumnos</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="borrarCurso(${c.id})">Borrar</button>
+                    </td>
+                </tr>`;
+        });
+    }
+    document.getElementById('cursoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            nombre: document.getElementById('nombreCurso').value,
+            etapa_id: document.getElementById('selectEtapa').value,
+            turno_id: document.getElementById('selectTurno').value,
+            tutor_id: document.getElementById('selectTutor').value
+        };
+        const res = await fetch(`${API_BASE}/cursos`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            alert("Curso creado correctamente.");
+            cargarCursos();
+        } else {
+            alert("ERROR CA2: No se pudo asignar este Tutor.\n\nRecuerda: Un profesor solo puede ser tutor de un curso por año.");
+        }
+    });
+    async function borrarCurso(id) {
+        if(!confirm("¿Borrar curso?")) return;
+        const res = await fetch(`${API_BASE}/cursos/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            alert("Curso borrado.");
+            cargarCursos();
+        } else {
+            alert("ERROR CA1: No se puede borrar el curso porque tiene ALUMNOS matriculados.");
+        }
+    }
+    async function verAlumnos(idCurso) {
+        try {
+            const res = await fetch(`${API_BASE}/cursos/${idCurso}/alumnos`);
+            const alumnos = await res.json();
+            let lista = alumnos.map(a => `- ${a.nombre}`).join('\n');
+            alert(`Alumnos en este curso:\n\n${lista || 'No hay alumnos'}`);
+        } catch(e) {
+            alert("No se pudieron cargar los alumnos.");
+        }
+    }
+    document.addEventListener('DOMContentLoaded', cargarDesplegables);
+</script>
+</body>
+</html>

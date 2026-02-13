@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>H3 Gestión de Profesores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4 bg-light">
+<h2>👨‍🏫 H3. Gestión de Profesores</h2>
+<div class="card p-4 mb-4">
+    <h5>Alta de Profesor</h5>
+    <form id="profeForm">
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <input type="text" id="nombre" class="form-control" placeholder="Nombre Completo" required>
+            </div>
+            <div class="col-md-4 mb-2">
+                <input type="text" id="dni" class="form-control" placeholder="DNI (Debe ser único)" required>
+            </div>
+            <div class="col-md-4 mb-2">
+                <input type="email" id="email" class="form-control" placeholder="Email (Debe ser único)" required>
+            </div>
+            <div class="col-md-6 mb-2">
+                <input type="text" id="departamento_id" class="form-control" placeholder="ID Departamento (Ej: 1)" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Profesor</button>
+    </form>
+</div>
+<table class="table table-striped bg-white">
+    <thead><tr><th>Nombre</th><th>DNI</th><th>Email</th><th>Acciones</th></tr></thead>
+    <tbody id="tablaProfes"></tbody>
+</table>
+<script>
+    const API_URL = 'http://100.52.46.68:3000/profesores';
+    async function cargarProfes() {
+        const res = await fetch(API_URL);
+        const profes = await res.json();
+        const tbody = document.getElementById('tablaProfes');
+        tbody.innerHTML = '';
+        profes.forEach(p => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${p.nombre}</td>
+                    <td>${p.dni}</td>
+                    <td>${p.email}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="borrarProfe(${p.id})">Eliminar</button>
+                    </td>
+                </tr>`;
+        });
+    }
+    document.getElementById('profeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            nombre: document.getElementById('nombre').value,
+            dni: document.getElementById('dni').value,
+            email: document.getElementById('email').value,
+            departamento_id: document.getElementById('departamento_id').value
+        };
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            alert("Profesor creado");
+            cargarProfes();
+        } else {
+            alert("ERROR CA1: No se puede crear. Es posible que el DNI o Email ya existan en la base de datos."); 
+        }
+    });
+    async function borrarProfe(id) {
+        if(!confirm("¿Eliminar este profesor?")) return;
+        const accionReservas = confirm("ATENCIÓN (CA2): ¿Desea MANTENER las reservas activas del profesor?\n\n[Aceptar] = Mantener Reservas\n[Cancelar] = Cancelar sus Reservas");
+        const keep = accionReservas ? 'true' : 'false';
+        const res = await fetch(`${API_URL}/${id}?mantenerReservas=${keep}`, { method: 'DELETE' });
+        if(res.ok) {
+            alert("Profesor eliminado y reservas gestionadas.");
+            cargarProfes();
+        } else {
+            alert("Error al eliminar.");
+        }
+    }
+    cargarProfes();
+</script>
+</body>
+</html>

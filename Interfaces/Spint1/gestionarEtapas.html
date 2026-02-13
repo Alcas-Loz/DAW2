@@ -18,6 +18,14 @@
         <form id="etapaForm">
           <input type="hidden" id="etapaId" />
           <div class="mb-3">
+            <label for="etapaId" class="form-label">Id de la Etapa</label>
+            <input
+              type="text"
+              class="form-control"
+              id="etapaId"
+              disabled
+              placeholder="ID generado automáticamente"
+            />
             <label for="nombreEtapa" class="form-label"
               >Nombre de la Etapa (Ej: ESO, Bachillerato)</label
             >
@@ -27,6 +35,15 @@
               id="nombreEtapa"
               required
               placeholder="Introduce el nombre"
+            />
+            <label for="descripcionEtapa" class="form-label mt-3"
+              >Descripción (opcional)</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="descripcionEtapa"
+              placeholder="Puedes agregar una descripción breve"
             />
           </div>
           <button type="submit" class="btn btn-primary" id="btnGuardar">
@@ -58,7 +75,7 @@
       </div>
     </div>
     <script>
-      const API_URL = "http://localhost:3000/etapas";
+      const API_URL = "http://100.52.46.68:3000/etapas";
       document.addEventListener("DOMContentLoaded", cargarEtapas);
       async function cargarEtapas() {
         try {
@@ -90,13 +107,18 @@
           e.preventDefault();
           const id = document.getElementById("etapaId").value;
           const nombre = document.getElementById("nombreEtapa").value;
+          const descripcion = document.getElementById("descripcionEtapa").value;
           const method = id ? "PUT" : "POST";
           const url = id ? `${API_URL}/${id}` : API_URL;
           try {
             const response = await fetch(url, {
               method: method,
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ nombre: nombre }),
+              body: JSON.stringify({
+                id: id,
+                nombre: nombre,
+                descripcion: descripcion,
+              }),
             });
             if (response.ok) {
               alert(
@@ -132,9 +154,10 @@
           alert("Error de conexión con el servidor.");
         }
       }
-      window.prepararEdicion = function (id, nombre) {
+      window.prepararEdicion = function (id, nombre, descripcion) {
         document.getElementById("etapaId").value = id;
         document.getElementById("nombreEtapa").value = nombre;
+        document.getElementById("descripcionEtapa").value = descripcion;
         document.getElementById("btnGuardar").textContent = "Actualizar Etapa";
         document.getElementById("formTitle").textContent = "Editar Etapa (CA2)";
         document.getElementById("btnCancelar").style.display = "inline-block";
